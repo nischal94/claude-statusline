@@ -1,3 +1,42 @@
 node_modules/
 *.bak
 .DS_Store
+
+# Settings (personal / machine-specific)
+settings.json
+settings.local.json
+settings.custom.json
+settings.native.json
+.credentials.json
+
+# Runtime & cache
+cache/
+statsig/
+telemetry/
+debug/
+sessions/
+backups/
+image-cache/
+paste-cache/
+shell-snapshots/
+file-history/
+stats-cache.json
+history.jsonl
+code-activity.log
+*.log
+mcp-needs-auth-cache.json
+
+# Session state
+tasks/
+todos/
+plans/
+channels/
+projects/
+chrome/
+
+# Personal config (not part of statusline project)
+CLAUDE.md
+rules/
+plugins/
+security-tools/
+agent-v2-template.md
