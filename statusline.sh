@@ -251,7 +251,7 @@ line1+="[${pct_color}${ctx_bar}${reset} ${pct_color}${pct_used}%${reset}${dim} /
 line1+="${sep}"
 line1+="${yellow}${dirname}${reset}"
 if [ -n "$project_type" ]; then
-    line1+=" ${yellow}${project_type}${reset}"
+    line1+=" ${dim}${project_type}${reset}"
 fi
 if [ -n "$git_branch" ]; then
     line1+=" ${green}(${git_branch}${red}${git_dirty}${green})${reset}"
@@ -268,10 +268,10 @@ if [ -n "$session_duration" ]; then
 fi
 line1+="${sep}"
 case "$effort" in
-    high)   line1+="${yellow}● ${effort}${reset}" ;;
-    medium) line1+="${yellow}◑ ${effort}${reset}" ;;
-    low)    line1+="${yellow}◔ ${effort}${reset}" ;;
-    *)      line1+="${yellow}◑ ${effort}${reset}" ;;
+    high)   line1+="${dim}● ${effort}${reset}" ;;
+    medium) line1+="${dim}◑ ${effort}${reset}" ;;
+    low)    line1+="${dim}◔ ${effort}${reset}" ;;
+    *)      line1+="${dim}◑ ${effort}${reset}" ;;
 esac
 
 # Cost estimate
@@ -291,7 +291,7 @@ cost=$(awk -v it="$input_tokens" -v ot="$output_tokens" -v cc="$cache_create" -v
                else if (t >= 0.001) printf "%.3f", t
                else printf "%.4f", t
            }')
-[ -n "$cost" ] && [ "$cost" != "0.0000" ] && line1+="${sep}${yellow}\$${cost}${reset}"
+[ -n "$cost" ] && [ "$cost" != "0.0000" ] && line1+="${sep}${dim}\$${cost}${reset}"
 
 # Plugins and hooks counts
 if [ -f "$settings_path" ]; then
