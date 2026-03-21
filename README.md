@@ -7,8 +7,8 @@ A Claude Code statusline showing real-time rate limits, model info, context usag
 ```
 Claude Sonnet 4.6 [Explanatory] │ [████░░░░░░ 41% / 200k] │ nischal ⚛ React (main*) ↑2 +3 ~1 │ ⏱ 12m │ ◑ default │ 4 plugins │ $0.02
 
-current ●●●●○○○○○○  45% ⟳ 2:30pm
-weekly  ●●●●●●○○○○  55% ⟳ mar 28
+current ●●●●○○○○○○  45% ⟳ 47m
+weekly  ●●●●●●○○○○  55% ⟳ 2d14h
 ```
 
 **Yellow:** model name · `[style]` · directory · project type · session duration · effort · plugins · cost
@@ -40,8 +40,8 @@ brew install jq
 **Line 1:** Model name · Output style (if non-default) · Context window bar `[████░░░░░░ 41% / 200k]` · Directory · Project type · Git branch + dirty flag · Ahead/behind remote · File change counts · Session duration · Effort level · Plugin count · Hook count · Cost
 
 **Lines 2–3:** Live rate limit data fetched from the Anthropic API (cached for 60s)
-- `current` — 5-hour window utilization with reset time
-- `weekly` — 7-day window utilization with reset date
+- `current` — 5-hour window utilization with live countdown to reset (e.g. `47m`, `1h23m`)
+- `weekly` — 7-day window utilization with live countdown to reset (e.g. `2d14h`)
 - `extra` — paid credit usage (shown only if enabled on your account)
 
 ### Color scheme
