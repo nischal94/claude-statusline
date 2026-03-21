@@ -1,0 +1,16 @@
+{
+  "name": "@nischal94/claude-statusline",
+  "version": "1.0.0",
+  "description": "A minimal Claude Code statusline showing model, context usage, git info, session duration, and cost",
+  "bin": {
+    "claude-statusline": "./bin/install.js"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "statusline",
+    "cli"
+  ],
+  "license": "MIT",
+  "author": "nischal94"
+}
