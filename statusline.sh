@@ -117,8 +117,27 @@ format_reset_time() {
     printf "%s" "$result"
 }
 
+# ── Project type detection ────────────────────────────────
+detect_project_type() {
+    local dir="$1"
+    if [ -f "$dir/package.json" ]; then
+        if grep -q '"next"' "$dir/package.json" 2>/dev/null; then echo "⚡Next.js"
+        elif grep -q '"react"' "$dir/package.json" 2>/dev/null; then echo "⚛ React"
+        elif grep -q '"vue"' "$dir/package.json" 2>/dev/null; then echo "💚Vue"
+        else echo "📦Node"
+        fi
+    elif [ -f "$dir/pyproject.toml" ] || [ -f "$dir/requirements.txt" ] || [ -f "$dir/setup.py" ]; then echo "🐍Python"
+    elif [ -f "$dir/Cargo.toml" ]; then echo "🦀Rust"
+    elif [ -f "$dir/go.mod" ]; then echo "🐹Go"
+    elif [ -f "$dir/Gemfile" ]; then echo "💎Ruby"
+    elif [ -f "$dir/pom.xml" ] || [ -f "$dir/build.gradle" ]; then echo "☕Java"
+    elif [ -f "$dir/composer.json" ]; then echo "🐘PHP"
+    fi
+}
+
 # ── Extract JSON data ───────────────────────────────────
 model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"')
+output_style=$(echo "$input" | jq -r '.output_style.name // ""')
 
 size=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
 [ "$size" -eq 0 ] 2>/dev/null && size=200000
@@ -151,12 +170,35 @@ dirname=$(basename "$cwd")
 
 git_branch=""
 git_dirty=""
+git_ahead_behind=""
+git_changes=""
+project_type=""
 if git -C "$cwd" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     git_branch=$(git -C "$cwd" symbolic-ref --short HEAD 2>/dev/null)
     if [ -n "$(git -C "$cwd" status --porcelain 2>/dev/null)" ]; then
         git_dirty="*"
     fi
+
+    # Ahead/behind remote
+    upstream=$(timeout 1 git -C "$cwd" rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)
+    if [ -n "$upstream" ]; then
+        ahead=$(timeout 1 git -C "$cwd" rev-list --count @{u}..HEAD 2>/dev/null || echo "0")
+        behind=$(timeout 1 git -C "$cwd" rev-list --count HEAD..@{u} 2>/dev/null || echo "0")
+        [ "$ahead" -gt 0 ] 2>/dev/null && git_ahead_behind+="↑${ahead}"
+        [ "$behind" -gt 0 ] 2>/dev/null && git_ahead_behind+="↓${behind}"
+    fi
+
+    # File change counts
+    untracked=$(git -C "$cwd" ls-files --others --exclude-standard 2>/dev/null | wc -l | tr -d ' ')
+    staged=$(git -C "$cwd" diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
+    modified=$(git -C "$cwd" diff --name-only 2>/dev/null | wc -l | tr -d ' ')
+    [ "$untracked" -gt 0 ] 2>/dev/null && git_changes+="${red}+${untracked}${reset} "
+    [ "$staged" -gt 0 ] 2>/dev/null && git_changes+="${green}✓${staged}${reset} "
+    [ "$modified" -gt 0 ] 2>/dev/null && git_changes+="${yellow}~${modified}${reset}"
+    git_changes="${git_changes% }"
 fi
+
+project_type=$(detect_project_type "$cwd")
 
 session_duration=""
 session_start=$(echo "$input" | jq -r '.session.start_time // empty')
@@ -176,12 +218,24 @@ if [ -n "$session_start" ] && [ "$session_start" != "null" ]; then
 fi
 
 line1="${blue}${model_name}${reset}"
+if [ -n "$output_style" ] && [ "$output_style" != "null" ] && [ "$output_style" != "default" ]; then
+    line1+=" ${dim}[${output_style}]${reset}"
+fi
 line1+="${sep}"
 line1+="✍️ ${pct_color}${pct_used}%${reset}"
 line1+="${sep}"
 line1+="${cyan}${dirname}${reset}"
+if [ -n "$project_type" ]; then
+    line1+=" ${project_type}"
+fi
 if [ -n "$git_branch" ]; then
     line1+=" ${green}(${git_branch}${red}${git_dirty}${green})${reset}"
+    if [ -n "$git_ahead_behind" ]; then
+        line1+=" ${white}${git_ahead_behind}${reset}"
+    fi
+fi
+if [ -n "$git_changes" ]; then
+    line1+=" $(printf "%b" "$git_changes")"
 fi
 if [ -n "$session_duration" ]; then
     line1+="${sep}"
@@ -194,6 +248,14 @@ case "$effort" in
     low)    line1+="${dim}◔ ${effort}${reset}" ;;
     *)      line1+="${dim}◑ ${effort}${reset}" ;;
 esac
+
+# Plugins and hooks counts
+if [ -f "$settings_path" ]; then
+    plugin_count=$(jq '[.enabledPlugins // {} | to_entries[] | select(.value == true)] | length' "$settings_path" 2>/dev/null)
+    hooks_count=$(jq '[.hooks // {} | to_entries[] | .value[]] | length' "$settings_path" 2>/dev/null)
+    [ -n "$plugin_count" ] && [ "$plugin_count" -gt 0 ] 2>/dev/null && line1+="${sep}${magenta}${plugin_count} plugins${reset}"
+    [ -n "$hooks_count" ] && [ "$hooks_count" -gt 0 ] 2>/dev/null && line1+="${sep}${yellow}${hooks_count} hooks${reset}"
+fi
 
 # ── OAuth token resolution ──────────────────────────────
 get_oauth_token() {
