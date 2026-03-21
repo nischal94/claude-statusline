@@ -43,6 +43,15 @@ color_for_pct() {
     fi
 }
 
+color_for_rate() {
+    local pct=$1
+    if [ "$pct" -ge 90 ]; then printf "$red"
+    elif [ "$pct" -ge 50 ]; then printf "$yellow"
+    elif [ "$pct" -ge 30 ]; then printf "$orange"
+    else printf "$green"
+    fi
+}
+
 build_bar() {
     local pct=$1
     local width=$2
@@ -377,7 +386,7 @@ if [ -n "$usage_data" ] && echo "$usage_data" | jq -e . >/dev/null 2>&1; then
     five_hour_reset_iso=$(echo "$usage_data" | jq -r '.five_hour.resets_at // empty')
     five_hour_reset=$(format_reset_time "$five_hour_reset_iso" "time")
     five_hour_bar=$(build_bar "$five_hour_pct" "$bar_width")
-    five_hour_pct_color=$(color_for_pct "$five_hour_pct")
+    five_hour_pct_color=$(color_for_rate "$five_hour_pct")
     five_hour_pct_fmt=$(printf "%3d" "$five_hour_pct")
 
     rate_lines+="${white}current${reset} ${five_hour_bar} ${five_hour_pct_color}${five_hour_pct_fmt}%${reset} ${dim}⟳${reset} ${white}${five_hour_reset}${reset}"
@@ -386,7 +395,7 @@ if [ -n "$usage_data" ] && echo "$usage_data" | jq -e . >/dev/null 2>&1; then
     seven_day_reset_iso=$(echo "$usage_data" | jq -r '.seven_day.resets_at // empty')
     seven_day_reset=$(format_reset_time "$seven_day_reset_iso" "datetime")
     seven_day_bar=$(build_bar "$seven_day_pct" "$bar_width")
-    seven_day_pct_color=$(color_for_pct "$seven_day_pct")
+    seven_day_pct_color=$(color_for_rate "$seven_day_pct")
     seven_day_pct_fmt=$(printf "%3d" "$seven_day_pct")
 
     rate_lines+="\n${white}weekly${reset}  ${seven_day_bar} ${seven_day_pct_color}${seven_day_pct_fmt}%${reset} ${dim}⟳${reset} ${white}${seven_day_reset}${reset}"
@@ -397,7 +406,7 @@ if [ -n "$usage_data" ] && echo "$usage_data" | jq -e . >/dev/null 2>&1; then
         extra_used=$(echo "$usage_data" | jq -r '.extra_usage.used_credits // 0' | awk '{printf "%.2f", $1/100}')
         extra_limit=$(echo "$usage_data" | jq -r '.extra_usage.monthly_limit // 0' | awk '{printf "%.2f", $1/100}')
         extra_bar=$(build_bar "$extra_pct" "$bar_width")
-        extra_pct_color=$(color_for_pct "$extra_pct")
+        extra_pct_color=$(color_for_rate "$extra_pct")
 
         extra_reset=$(date -v+1m -v1d +"%b %-d" 2>/dev/null | tr '[:upper:]' '[:lower:]')
         if [ -z "$extra_reset" ]; then
