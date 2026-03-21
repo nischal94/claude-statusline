@@ -249,7 +249,7 @@ for ((i=0; i<ctx_empty; i++)); do ctx_bar+="░"; done
 line1+="${sep}"
 line1+="[${pct_color}${ctx_bar}${reset} ${pct_color}${pct_used}%${reset}${dim} / ${reset}${white}${total_tokens}${reset}]"
 line1+="${sep}"
-line1+="${cyan}${dirname}${reset}"
+line1+="${yellow}${dirname}${reset}"
 if [ -n "$project_type" ]; then
     line1+=" ${project_type}"
 fi
