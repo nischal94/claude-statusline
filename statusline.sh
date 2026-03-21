@@ -54,7 +54,7 @@ color_for_current() {
 color_for_weekly() {
     local pct=$1
     if [ "$pct" -ge 90 ]; then printf "$red"
-    elif [ "$pct" -ge 70 ]; then printf "$yellow"
+    elif [ "$pct" -ge 50 ]; then printf "$yellow"
     else printf "$green"
     fi
 }
