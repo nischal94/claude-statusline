@@ -137,12 +137,14 @@ detect_project_type() {
 
 # ── Extract JSON data ───────────────────────────────────
 model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"')
+model_id=$(echo "$input" | jq -r '.model.id // ""')
 output_style=$(echo "$input" | jq -r '.output_style.name // ""')
 
 size=$(echo "$input" | jq -r '.context_window.context_window_size // 200000')
 [ "$size" -eq 0 ] 2>/dev/null && size=200000
 
 input_tokens=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // 0')
+output_tokens=$(echo "$input" | jq -r '.context_window.current_usage.output_tokens // 0')
 cache_create=$(echo "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // 0')
 cache_read=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // 0')
 current=$(( input_tokens + cache_create + cache_read ))
@@ -217,7 +219,7 @@ if [ -n "$session_start" ] && [ "$session_start" != "null" ]; then
     fi
 fi
 
-line1="${blue}${model_name}${reset}"
+line1="${yellow}${model_name}${reset}"
 if [ -n "$output_style" ] && [ "$output_style" != "null" ] && [ "$output_style" != "default" ]; then
     line1+=" ${dim}[${output_style}]${reset}"
 fi
@@ -254,6 +256,25 @@ case "$effort" in
     low)    line1+="${dim}◔ ${effort}${reset}" ;;
     *)      line1+="${dim}◑ ${effort}${reset}" ;;
 esac
+
+# Cost estimate
+case "$model_id" in
+    *"claude-opus-4"*)    ip=15.00; op=75.00;  cp=18.75; rp=1.50 ;;
+    *"claude-sonnet-4"*|*"claude-3-7-sonnet"*|*"claude-3-5-sonnet"*)
+                          ip=3.00;  op=15.00;  cp=3.75;  rp=0.30 ;;
+    *"claude-haiku"*|*"claude-3-5-haiku"*)
+                          ip=0.80;  op=4.00;   cp=1.00;  rp=0.08 ;;
+    *)                    ip=3.00;  op=15.00;  cp=3.75;  rp=0.30 ;;
+esac
+cost=$(awk -v it="$input_tokens" -v ot="$output_tokens" -v cc="$cache_create" -v cr="$cache_read" \
+           -v ip="$ip" -v op="$op" -v cp="$cp" -v rp="$rp" \
+           'BEGIN {
+               t = (it*ip + ot*op + cc*cp + cr*rp) / 1000000
+               if (t >= 0.01) printf "%.2f", t
+               else if (t >= 0.001) printf "%.3f", t
+               else printf "%.4f", t
+           }')
+[ -n "$cost" ] && [ "$cost" != "0.0000" ] && line1+="${sep}${yellow}\$${cost}${reset}"
 
 # Plugins and hooks counts
 if [ -f "$settings_path" ]; then
