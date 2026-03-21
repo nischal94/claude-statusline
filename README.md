@@ -54,11 +54,11 @@ Yellow is the primary accent color. Dynamic bars shift based on usage:
 | Current rate limit | < 80% | ≥ 80% | ≥ 90% |
 | Weekly rate limit | < 50% | ≥ 50% | ≥ 90% |
 
-**Always yellow:** model name · output style · directory · project type · session duration · effort level · cost · plugin count · hook count
+**Always yellow:** model name · output style · directory · session duration · plugin count · hook count
+
+**Always grey/dim:** project type · effort level · cost · labels · reset times · separators
 
 **Always green:** git branch
-
-**Always white/dim:** labels, reset times, separators
 
 ### Project types detected
 
