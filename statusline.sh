@@ -37,8 +37,8 @@ format_tokens() {
 color_for_pct() {
     local pct=$1
     if [ "$pct" -ge 90 ]; then printf "$red"
-    elif [ "$pct" -ge 50 ]; then printf "$yellow"
-    elif [ "$pct" -ge 30 ]; then printf "$orange"
+    elif [ "$pct" -ge 70 ]; then printf "$yellow"
+    elif [ "$pct" -ge 50 ]; then printf "$orange"
     else printf "$green"
     fi
 }
