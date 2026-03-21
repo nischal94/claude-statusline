@@ -5,11 +5,15 @@ A Claude Code statusline showing real-time rate limits, model info, context usag
 ## Preview
 
 ```
-Claude Sonnet 4.6 [explanatory] │ [████░░░░░░ 41% / 200k] │ myproject ⚡Next.js (main*) ↑2 +3 ~1 │ ⏱ 12m │ ◑ default │ 4 plugins │ 3 hooks
+Claude Sonnet 4.6 [Explanatory] │ [████░░░░░░ 41% / 200k] │ nischal ⚛ React (main*) ↑2 +3 ~1 │ ⏱ 12m │ ◑ default │ 4 plugins │ $0.02
 
 current ●●●●○○○○○○  45% ⟳ 2:30pm
-weekly  ●●●●●●○○○○  65% ⟳ mar 28
+weekly  ●●●●●●○○○○  55% ⟳ mar 28
 ```
+
+**Yellow:** model name · `[style]` · directory · project type · session duration · effort · plugins · cost
+**Green → Yellow → Red:** context bar (80%/90%) · current bar (80%/90%) · weekly bar (50%/90%)
+**Green:** git branch · white: labels and reset times
 
 ## Install
 
