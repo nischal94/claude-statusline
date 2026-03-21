@@ -229,7 +229,7 @@ fi
 
 line1="${yellow}${model_name}${reset}"
 if [ -n "$output_style" ] && [ "$output_style" != "null" ] && [ "$output_style" != "default" ]; then
-    line1+=" ${dim}[${output_style}]${reset}"
+    line1+=" ${yellow}[${output_style}]${reset}"
 fi
 ctx_filled=$(( pct_used * 10 / 100 ))
 ctx_empty=$(( 10 - ctx_filled ))
