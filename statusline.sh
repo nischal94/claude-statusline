@@ -221,8 +221,14 @@ line1="${blue}${model_name}${reset}"
 if [ -n "$output_style" ] && [ "$output_style" != "null" ] && [ "$output_style" != "default" ]; then
     line1+=" ${dim}[${output_style}]${reset}"
 fi
+ctx_filled=$(( pct_used * 10 / 100 ))
+ctx_empty=$(( 10 - ctx_filled ))
+ctx_bar=""
+for ((i=0; i<ctx_filled; i++)); do ctx_bar+="█"; done
+for ((i=0; i<ctx_empty; i++)); do ctx_bar+="░"; done
+
 line1+="${sep}"
-line1+="✍️ ${pct_color}${pct_used}%${reset}"
+line1+="[${pct_color}${ctx_bar}${reset} ${pct_color}${pct_used}%${reset}${dim} / ${reset}${white}${total_tokens}${reset}]"
 line1+="${sep}"
 line1+="${cyan}${dirname}${reset}"
 if [ -n "$project_type" ]; then
