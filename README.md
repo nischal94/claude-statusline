@@ -33,12 +33,24 @@ brew install jq
 
 ## What It Shows
 
-**Line 1:** Model name · Output style (if non-default) · Context window bar `[████░░░░░░ 41% / 200k]` · Directory · Project type · Git branch + dirty flag · Ahead/behind remote · File change counts · Session duration · Effort level · Plugin count · Hook count
+**Line 1:** Model name · Output style (if non-default) · Context window bar `[████░░░░░░ 41% / 200k]` · Directory · Project type · Git branch + dirty flag · Ahead/behind remote · File change counts · Session duration · Effort level · Plugin count · Hook count · Cost
 
 **Lines 2–3:** Live rate limit data fetched from the Anthropic API (cached for 60s)
 - `current` — 5-hour window utilization with reset time
 - `weekly` — 7-day window utilization with reset date
 - `extra` — paid credit usage (shown only if enabled on your account)
+
+### Color scheme
+
+All elements use yellow as the primary accent color. Bars shift color based on usage:
+
+| Element | Green | Yellow | Red |
+|---------|-------|--------|-----|
+| Context window bar | < 80% | ≥ 80% | ≥ 90% |
+| Current rate limit | < 80% | ≥ 80% | ≥ 90% |
+| Weekly rate limit | < 50% | ≥ 50% | ≥ 90% |
+
+Always yellow: model name, output style, directory, project type, session duration, effort level, cost, plugin count.
 
 ### Project types detected
 
