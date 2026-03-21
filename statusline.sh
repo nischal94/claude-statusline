@@ -326,6 +326,21 @@ if [ -f "$settings_path" ]; then
     [ -n "$hooks_count" ] && [ "$hooks_count" -gt 0 ] 2>/dev/null && line1+="${sep}${yellow}${hooks_count} hooks${reset}"
 fi
 
+# MCP server count (cached for 5 minutes — claude mcp list checks health)
+mcp_cache_file="/tmp/claude/mcp-count-cache.txt"
+mcp_count=""
+needs_mcp_refresh=true
+if [ -f "$mcp_cache_file" ]; then
+    mcp_mtime=$(stat -f %m "$mcp_cache_file" 2>/dev/null || stat -c %Y "$mcp_cache_file" 2>/dev/null)
+    mcp_age=$(( $(date +%s) - mcp_mtime ))
+    [ "$mcp_age" -lt 300 ] && needs_mcp_refresh=false && mcp_count=$(cat "$mcp_cache_file" 2>/dev/null)
+fi
+if $needs_mcp_refresh; then
+    mcp_count=$(claude mcp list 2>/dev/null | grep -c "✓\|✗\|!" || echo "0")
+    echo "$mcp_count" > "$mcp_cache_file"
+fi
+[ -n "$mcp_count" ] && [ "$mcp_count" -gt 0 ] 2>/dev/null && line1+="${sep}${yellow}${mcp_count} mcp${reset}"
+
 # ── OAuth token resolution ──────────────────────────────
 get_oauth_token() {
     local token=""
