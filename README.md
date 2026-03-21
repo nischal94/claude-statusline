@@ -46,7 +46,7 @@ brew install jq
 
 ### Color scheme
 
-All elements use yellow as the primary accent color. Bars shift color based on usage:
+Yellow is the primary accent color. Dynamic bars shift based on usage:
 
 | Element | Green | Yellow | Red |
 |---------|-------|--------|-----|
@@ -54,7 +54,11 @@ All elements use yellow as the primary accent color. Bars shift color based on u
 | Current rate limit | < 80% | ≥ 80% | ≥ 90% |
 | Weekly rate limit | < 50% | ≥ 50% | ≥ 90% |
 
-Always yellow: model name, output style, directory, project type, session duration, effort level, cost, plugin count.
+**Always yellow:** model name · output style · directory · project type · session duration · effort level · cost · plugin count · hook count
+
+**Always green:** git branch
+
+**Always white/dim:** labels, reset times, separators
 
 ### Project types detected
 
