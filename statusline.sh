@@ -134,6 +134,31 @@ format_reset_time() {
     printf "%s" "$result"
 }
 
+format_countdown() {
+    local iso_str="$1"
+    [ -z "$iso_str" ] || [ "$iso_str" = "null" ] && return
+
+    local epoch
+    epoch=$(iso_to_epoch "$iso_str")
+    [ -z "$epoch" ] && return
+
+    local now remaining
+    now=$(date +%s)
+    remaining=$(( epoch - now ))
+
+    [ "$remaining" -le 0 ] && printf "now" && return
+
+    if [ "$remaining" -ge 86400 ]; then
+        printf "%dd%dh" $(( remaining / 86400 )) $(( (remaining % 86400) / 3600 ))
+    elif [ "$remaining" -ge 3600 ]; then
+        printf "%dh%dm" $(( remaining / 3600 )) $(( (remaining % 3600) / 60 ))
+    elif [ "$remaining" -ge 60 ]; then
+        printf "%dm" $(( remaining / 60 ))
+    else
+        printf "%ds" "$remaining"
+    fi
+}
+
 # ── Project type detection ────────────────────────────────
 detect_project_type() {
     local dir="$1"
@@ -392,7 +417,7 @@ if [ -n "$usage_data" ] && echo "$usage_data" | jq -e . >/dev/null 2>&1; then
 
     five_hour_pct=$(echo "$usage_data" | jq -r '.five_hour.utilization // 0' | awk '{printf "%.0f", $1}')
     five_hour_reset_iso=$(echo "$usage_data" | jq -r '.five_hour.resets_at // empty')
-    five_hour_reset=$(format_reset_time "$five_hour_reset_iso" "time")
+    five_hour_reset=$(format_countdown "$five_hour_reset_iso")
     five_hour_bar=$(build_bar "$five_hour_pct" "$bar_width" "color_for_current")
     five_hour_pct_color=$(color_for_current "$five_hour_pct")
     five_hour_pct_fmt=$(printf "%3d" "$five_hour_pct")
@@ -401,7 +426,7 @@ if [ -n "$usage_data" ] && echo "$usage_data" | jq -e . >/dev/null 2>&1; then
 
     seven_day_pct=$(echo "$usage_data" | jq -r '.seven_day.utilization // 0' | awk '{printf "%.0f", $1}')
     seven_day_reset_iso=$(echo "$usage_data" | jq -r '.seven_day.resets_at // empty')
-    seven_day_reset=$(format_reset_time "$seven_day_reset_iso" "datetime")
+    seven_day_reset=$(format_countdown "$seven_day_reset_iso")
     seven_day_bar=$(build_bar "$seven_day_pct" "$bar_width" "color_for_weekly")
     seven_day_pct_color=$(color_for_weekly "$seven_day_pct")
     seven_day_pct_fmt=$(printf "%3d" "$seven_day_pct")
