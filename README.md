@@ -5,7 +5,7 @@ A Claude Code statusline showing real-time rate limits, model info, context usag
 ## Preview
 
 ```
-Claude Sonnet 4.6 [explanatory] │ ✍️ 41% │ myproject ⚡Next.js (main*) ↑2 +3 ~1 │ ⏱ 12m │ ◑ default │ 4 plugins │ 3 hooks
+Claude Sonnet 4.6 [explanatory] │ [████░░░░░░ 41% / 200k] │ myproject ⚡Next.js (main*) ↑2 +3 ~1 │ ⏱ 12m │ ◑ default │ 4 plugins │ 3 hooks
 
 current ●●●●○○○○○○  45% ⟳ 2:30pm
 weekly  ●●●●●●○○○○  65% ⟳ mar 28
@@ -33,7 +33,7 @@ brew install jq
 
 ## What It Shows
 
-**Line 1:** Model name · Output style (if non-default) · Context usage % · Directory · Project type · Git branch + dirty flag · Ahead/behind remote · File change counts · Session duration · Effort level · Plugin count · Hook count
+**Line 1:** Model name · Output style (if non-default) · Context window bar `[████░░░░░░ 41% / 200k]` · Directory · Project type · Git branch + dirty flag · Ahead/behind remote · File change counts · Session duration · Effort level · Plugin count · Hook count
 
 **Lines 2–3:** Live rate limit data fetched from the Anthropic API (cached for 60s)
 - `current` — 5-hour window utilization with reset time
