@@ -1,11 +1,11 @@
 # claude-statusline
 
-A Claude Code statusline showing real-time rate limits, model info, context usage, git info, and session duration.
+A Claude Code statusline showing real-time rate limits, model info, context usage, project type, git details, plugins, cost, and session duration.
 
 ## Preview
 
 ```
-Claude Sonnet 4.6 │ ✍️ 41% │ myproject (main) │ ⏱ 12m │ ◑ default
+Claude Sonnet 4.6 [explanatory] │ ✍️ 41% │ myproject ⚡Next.js (main*) ↑2 +3 ~1 │ ⏱ 12m │ ◑ default │ 4 plugins │ 3 hooks
 
 current ●●●●○○○○○○  45% ⟳ 2:30pm
 weekly  ●●●●●●○○○○  65% ⟳ mar 28
@@ -33,12 +33,35 @@ brew install jq
 
 ## What It Shows
 
-**Line 1:** Model name · Context usage % · Directory (git branch) · Session duration · Effort level
+**Line 1:** Model name · Output style (if non-default) · Context usage % · Directory · Project type · Git branch + dirty flag · Ahead/behind remote · File change counts · Session duration · Effort level · Plugin count · Hook count
 
 **Lines 2–3:** Live rate limit data fetched from the Anthropic API (cached for 60s)
 - `current` — 5-hour window utilization with reset time
 - `weekly` — 7-day window utilization with reset date
 - `extra` — paid credit usage (shown only if enabled on your account)
+
+### Project types detected
+
+| Icon | Type |
+|------|------|
+| ⚡ | Next.js |
+| ⚛ | React |
+| 💚 | Vue |
+| 📦 | Node |
+| 🐍 | Python |
+| 🦀 | Rust |
+| 🐹 | Go |
+| 💎 | Ruby |
+| ☕ | Java |
+| 🐘 | PHP |
+
+### Git indicators
+
+- `(main*)` — dirty working tree
+- `↑2` / `↓1` — commits ahead/behind remote
+- `+3` — untracked files (red)
+- `✓1` — staged files (green)
+- `~2` — modified files (yellow)
 
 ## Uninstall
 
