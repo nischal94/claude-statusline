@@ -1,0 +1,44 @@
+name: shellcheck
+
+# Static analysis for the .sh scripts in this repo. Catches common shell
+# bugs: unquoted variables (SC2086), command-substitution word-splitting
+# (SC2046), unused loop variables (SC2034), unsafe `cd && rm` patterns,
+# pipe-failure swallowing, and many more.
+#
+# Initially advisory: first run on an existing codebase usually surfaces
+# baseline findings. Promote to required (remove continue-on-error) once
+# the baseline is clean — see nischal94/repo-template/docs/SECURITY-OPERATIONS.md §4.
+
+on:
+  pull_request:
+    paths:
+      - "**/*.sh"
+      - "**/*.bash"
+      - ".github/workflows/shellcheck.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**/*.sh"
+      - "**/*.bash"
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: shellcheck (advisory)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@v2
+        with:
+          egress-policy: audit
+      - uses: actions/checkout@v6
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          severity: warning
+          ignore_names: ""
+        env:
+          SHELLCHECK_OPTS: -e SC1091  # source-not-followed; common false positive
